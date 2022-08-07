@@ -9,6 +9,9 @@ import jwt
 class Profile(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('refresh_token', type=str, required=False)
+    parser.add_argument('username', type=str, required=False)
+    parser.add_argument('email', type=str, required=False)
+    parser.add_argument('password', type=str, required=False)
 
     @jwt_required()
     def get(self):
@@ -24,20 +27,41 @@ class Profile(Resource):
 
     @jwt_required(fresh=True)
     def delete(self):
-        data = self.parser.parse_args()
-        if not data['refresh_token']:
-            return {"error": True, "data": {"message": "No Refresh Token was Provided"}}, 400
         user_id = get_jwt_identity()
         user = UserModel.find_by_id(user_id)
         if not user:
             return {"error": True, "data": {"message": "User Not Found"}}, 404
+        data = self.parser.parse_args()
+        if not data['refresh_token']:
+            return {"error": True, "data": {"message": "No Refresh Token was Provided"}}, 400
         user.delete_from_db()
         decoded_refresh_token = jwt.decode(data['refresh_token'], options={"verify_signature": False})
         jti_access_token = get_jwt()['jti']
         jti_refresh_token = decoded_refresh_token['jti']
         BLOCKLIST.add(jti_access_token)
         BLOCKLIST.add(jti_refresh_token)
-        return {"error": False, "data": {"message": "User deleted successfully"}}, 200
+        return {"error": False, "data": {"message": "Profile deleted successfully"}}, 200
+
+    @jwt_required(fresh=True)
+    def patch(self):
+        user_id = get_jwt_identity()
+        user = UserModel.find_by_id(user_id)
+        if not user:
+            return {"error": True, "data": {"message": "User Not Found"}}, 404
+        data = self.parser.parse_args()
+        if data['password']:
+            data['password'] = generate_password_hash(data['password'])
+            user.password = data['password']
+        if data['username']:
+            user.username = data['username']
+        if data['email']:
+            user.email = data['email']
+        user.save_to_db()
+        return {"error": False,
+                "data": {
+                    "message": "Profile Updated Successfully",
+                    "user": user.json()
+                }}, 200
 
 
 class UserLogout(Resource):
