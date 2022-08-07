@@ -5,9 +5,11 @@ class UserModel(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(80), nullable=False, unique=True)
-    username = db.Column(db.String(80), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.Text, nullable=False, unique=True)
+    username = db.Column(db.String(40), nullable=False, unique=True)
+    password = db.Column(db.Text, nullable=False)
+
+    tasks = db.relationship('TaskModel', lazy='dynamic')
 
     def __init__(self, username, email, password):
         self.username = username
@@ -18,7 +20,8 @@ class UserModel(db.Model):
         return {
             'user_id': self.user_id,
             'username': self.username,
-            'email': self.email
+            'email': self.email,
+            'tasks': [task.json() for task in self.tasks.all()]
         }
 
     def save_to_db(self):
