@@ -7,7 +7,7 @@ from flask_jwt_extended import JWTManager
 from resources.user_resource import UserRegister, UserLogin, UserLogout, TokenRefresh, Profile
 from datetime import timedelta
 from src.config.blocklist import BLOCKLIST
-from resources.task_resource import TaskList, TaskCreation
+from resources.task_resource import TaskList, TaskCreation, Task
 
 app = Flask(__name__)
 
@@ -80,4 +80,5 @@ api.add_resource(Profile, '/users/me')
 # task routes
 api.add_resource(TaskList, '/tasks')
 api.add_resource(TaskCreation, '/tasks')
+api.add_resource(Task, '/tasks/<int:task_id>')
 
