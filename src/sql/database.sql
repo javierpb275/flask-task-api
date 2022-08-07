@@ -9,7 +9,7 @@ CREATE TABLE users(
 
 CREATE TABLE tasks(
     task_id SERIAL PRIMARY KEY,
-    title VARCHAR(40) UNIQUE NOT NULL,
+    title VARCHAR(40) NOT NULL,
     description TEXT,
     done BOOLEAN NOT NULL DEFAULT FALSE,
     user_id SERIAL NOT NULL,

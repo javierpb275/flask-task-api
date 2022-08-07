@@ -6,8 +6,8 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from resources.user_resource import UserRegister, UserLogin, UserLogout, TokenRefresh, Profile
 from datetime import timedelta
-
 from src.config.blocklist import BLOCKLIST
+from resources.task_resource import TaskList, TaskCreation
 
 app = Flask(__name__)
 
@@ -70,8 +70,14 @@ def token_not_fresh_callback(error):
 
 api = Api(app)
 
+# user routes
 api.add_resource(TokenRefresh, '/users/refresh')
 api.add_resource(UserRegister, '/users/register')
 api.add_resource(UserLogin, '/users/login')
 api.add_resource(UserLogout, '/users/logout')
 api.add_resource(Profile, '/users/me')
+
+# task routes
+api.add_resource(TaskList, '/tasks')
+api.add_resource(TaskCreation, '/tasks')
+

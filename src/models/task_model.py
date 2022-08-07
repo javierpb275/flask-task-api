@@ -5,7 +5,7 @@ class TaskModel(db.Model):
     __tablename__ = 'tasks'
 
     task_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(40), nullable=False, unique=True)
+    title = db.Column(db.String(40), nullable=False)
     description = db.Column(db.Text, nullable=True)
     done = db.Column(db.Boolean, default=False)
 
@@ -40,8 +40,8 @@ class TaskModel(db.Model):
         return cls.query.filter_by(title=title).first()
 
     @classmethod
-    def find_by_id(cls, _id):
-        return cls.query.filter_by(task_id=_id).first()
+    def find_by_user_id_and_id(cls, user_id, _id):
+        return cls.query.filter_by(user_id=user_id, task_id=_id).first()
 
     @classmethod
     def find_all_by_user_id(cls, user_id):
